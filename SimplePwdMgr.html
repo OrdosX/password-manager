@@ -41,6 +41,13 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="legacy" class="col-sm-2 control-label">兼容模式</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" id="legacy">&nbsp;&nbsp;
+                            <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="仅生成数字、字母与下划线"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <input type="button" class="btn btn-primary" id="genAndCopy" value="生成并复制">
                             <input type="button" class="btn btn-default" id="gen" value="仅生成">
@@ -67,48 +74,77 @@
                 <span class="text-muted">由OrdosX用</span><span class="glyphicon glyphicon-heart"></span><span class="text-muted">打造</span>
             </div>
         </div>
+        <br>
     </footer>
 
     <script>
+        $(function () { $("[data-toggle='tooltip']").tooltip(); });
+        
         function gen() {
             var origin = $("#usage").val() + ":" + $("#pass").val();
             var hash = md5(origin);
             var result = "";
-            for (let i = 0; i < hash.length; i++) {
-                switch (hash.charCodeAt(i)) {
-                    case 49:
-                        result += '!';
-                        break;
-                    case 57:
-                        result += '_';
-                        break;
-                    case 50:
-                        result += 'H';
-                        break;
-                    case 51:
-                        result += 'Z';
-                        break;
-                    case 54:
-                        result += '=';
-                        break;
-                    case 101:
-                        result += '%';
-                        break;
-                    case 120:
-                        result += 'Y';
-                        break;
-                    case 99:
-                        result += '&';
-                        break;
-                    case 101:
-                        result += '#';
-                        break;
-                    case 105:
-                        result += '*';
-                        break;
-                    default:
-                        result += hash[i];
-                        break;
+            var isLegacy = $("#legacy").prop("checked")
+            if (isLegacy) {
+                for (let i = 0; i < hash.length; i++) {
+                    switch (hash.charAt(i)) {
+                        case "n":
+                            result += "_";
+                            break;
+                        case "a":
+                            result += "_";
+                            break;
+                        case "i":
+                            result += "_";
+                            break;
+                        case "v":
+                            result += "_";
+                            break;
+                        case "e":
+                            result += "_";
+                            break;
+                        default:
+                            result += hash[i];
+                            break;
+                    }
+                }
+            } else {
+                for (let i = 0; i < hash.length; i++) {
+                    switch (hash.charAt(i)) {
+                        case "1":
+                            result += '!';
+                            break;
+                        case "9":
+                            result += '_';
+                            break;
+                        case "2":
+                            result += 'H';
+                            break;
+                        case "6":
+                            result += '=';
+                            break;
+                        case "e":
+                            result += 'Z';
+                            break;
+                        case "x":
+                            result += '%';
+                            break;
+                        case "c":
+                            result += 'Y';
+                            break;
+                        case "i":
+                            result += '&';
+                            break;
+                        case "t":
+                            result += '#';
+                            break;
+                        case "d":
+                            result += '*';
+                            break;
+                        default:
+                            result += hash[i];
+                            break;
+                    }
                 }
             }
             return result;
