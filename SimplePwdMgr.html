@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+    <title>简易密码管理器</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="page-header">
+                    <h1>简易密码管理器</h1>
+                </div>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="usage" class="col-sm-2 control-label">用途</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="usage" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="col-sm-2 control-label">主密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="pass" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="num" class="col-sm-2 control-label">位数</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="num" value="16" max="32" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="button" class="btn btn-primary" id="genAndCopy" value="生成并复制">
+                            <input type="button" class="btn btn-default" id="gen" value="仅生成">
+                        </div>
+                    </div>
+                    <div class="form-group" hidden="hidden" id="resultDiv">
+                        <label for="res" class="col-sm-2 control-label">你的密码</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="res" readonly="readonly" aria-describedby="message">
+                            <span id="message" class="help-block"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function gen() {
+            var origin = $("#usage").val() + ":" + $("#pass").val();
+            var hash = md5(origin);
+            var result = "";
+            for (let i = 0; i < hash.length; i++) {
+                switch (hash.charCodeAt(i)) {
+                    case 49:
+                        result += '!';
+                        break;
+                    case 57:
+                        result += '_';
+                        break;
+                    case 50:
+                        result += 'H';
+                        break;
+                    case 54:
+                        result += '=';
+                        break;
+                    case 101:
+                        result += '%';
+                        break;
+                    case 120:
+                        result += 'B';
+                        break;
+                    case 99:
+                        result += '&';
+                        break;
+                    case 105:
+                        result += '*';
+                        break;
+                    default:
+                        result += hash[i];
+                        break;
+                }
+            }
+            return result;
+        }
+        $("#genAndCopy").click(function () {
+            var result = gen();
+            $("#res").val(result.substr(0, $("#num").val()));
+            $("#resultDiv").removeAttr("hidden");
+            $("#message").text("已复制到剪贴板");
+            $("#res").select();
+            document.execCommand("copy");
+        })
+        $("#gen").click(function () {
+            var result = gen();
+            $("#res").val(result.substr(0, $("#num").val()));
+            $("#resultDiv").removeAttr("hidden");
+            $("#message").text("");
+        })
+    </script>
+</body>
+
+</html>
