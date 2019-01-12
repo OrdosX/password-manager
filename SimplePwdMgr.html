@@ -58,6 +58,17 @@
         </div>
     </div>
 
+    <footer class="footer">
+        <div class="container">
+            <div class="pull-left">
+                <a class="text-muted" href="https://github.com/OrdosX/SimplePwdMgr">Github仓库</a>
+            </div>
+            <div class="pull-right">
+                <span class="text-muted">由OrdosX用</span><span class="glyphicon glyphicon-heart"></span><span class="text-muted">打造</span>
+            </div>
+        </div>
+    </footer>
+
     <script>
         function gen() {
             var origin = $("#usage").val() + ":" + $("#pass").val();
@@ -74,6 +85,9 @@
                     case 50:
                         result += 'H';
                         break;
+                    case 51:
+                        result += 'Z';
+                        break;
                     case 54:
                         result += '=';
                         break;
@@ -81,10 +95,13 @@
                         result += '%';
                         break;
                     case 120:
-                        result += 'B';
+                        result += 'Y';
                         break;
                     case 99:
                         result += '&';
+                        break;
+                    case 101:
+                        result += '#';
                         break;
                     case 105:
                         result += '*';
