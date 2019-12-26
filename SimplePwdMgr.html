@@ -44,7 +44,13 @@
                         <label for="legacy" class="col-sm-2 control-label">兼容模式</label>
                         <div class="col-sm-10">
                             <input type="checkbox" id="legacy">&nbsp;&nbsp;
-                            <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="仅生成数字、字母与下划线"></span>
+                            <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="仅生成数字、字母与下划线"></span>&nbsp;&nbsp;
+                            <div id="legacy-detail-wrapper" hidden>
+                                <input type="checkbox" checked disabled>生成数字&nbsp;&nbsp;
+                                <input type="checkbox" checked disabled>生成大小写字母&nbsp;&nbsp;
+                                <input type="checkbox" id="legacy-detail-underline">生成下划线（_）&nbsp;&nbsp;
+                                <input type="checkbox" id="legacy-detail-hyphen">生成连字符（-）
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -135,7 +141,7 @@
 
             return splited.join("");
         }
-        function genLegacy(usage, pass, digit) {
+        function genLegacy(usage, pass, digit, mode) {
             var hash = md5(usage + ":" + pass).substr(0,digit);
 
             //计算字母和数字
@@ -166,7 +172,7 @@
             }
 
             //将字母调整为一个大写一个小写，数字转换为一个数字一个符号
-            var alphabetChanged = false, numberChanged = false;
+            var alphabetChanged = false, numberChanged = false, hyphenUsed = false;
             for (let i = 0; i < hash.length; i++) {
                 if (splited[i].charCodeAt(0) >= 97 && splited[i].charCodeAt(0) <= 122) {
                     if (alphabetChanged) {
@@ -179,7 +185,20 @@
                     if (numberChanged) {
                         numberChanged = false;
                     } else {
-                        splited[i] = "_";
+                        switch(mode) {
+                            case 1: splited[i] = "_"; break;
+                            case 2: splited[i] = "-"; break;
+                            case 3: 
+                                if(hyphenUsed) {
+                                    splited[i] = "_";
+                                    hyphenUsed = false;
+                                    break;
+                                } else {
+                                    splited[i] = "-";
+                                    hyphenUsed = true;
+                                    break;
+                                }
+                        }
                         numberChanged = true;
                     }
                 }
@@ -187,27 +206,36 @@
 
             return splited.join("");
         }
-        $("#genAndCopy").click(function () {
-            var result;
+        function gen() {
             if ($("#legacy").prop("checked")) {
-                result = genLegacy($("#usage").val(), $("#pass").val(), $("#digit").val());
+                var mode = 0;
+                if($("#legacy-detail-underline").prop("checked") && $("#legacy-detail-hyphen").prop("checked")){
+                    mode = 3;
+                } else {
+                    if($("#legacy-detail-underline").prop("checked")) mode = 1;
+                    else if($("#legacy-detail-hyphen").prop("checked")) mode = 2;
+                }
+                return genLegacy($("#usage").val(), $("#pass").val(), $("#digit").val(), mode);
             } else {
-                result = genNormal($("#usage").val(), $("#pass").val(), $("#digit").val());
+                return genNormal($("#usage").val(), $("#pass").val(), $("#digit").val());
             }
-            $("#res").val(result);
+        }
+        $("#legacy").click(function() {
+            if ($("#legacy").prop("checked")) {
+                $("#legacy-detail-wrapper").removeAttr("hidden");
+            } else {
+                $("#legacy-detail-wrapper").attr("hidden", "true");
+            }
+        })
+        $("#genAndCopy").click(function () {
+            $("#res").val(gen());
             $("#resultDiv").removeAttr("hidden");
             $("#message").text("已复制到剪贴板");
             $("#res").select();
             document.execCommand("copy");
         })
         $("#gen").click(function () {
-            var result;
-            if ($("#legacy").prop("checked")) {
-                result = genLegacy($("#usage").val(), $("#pass").val(), $("#digit").val());
-            } else {
-                result = genNormal($("#usage").val(), $("#pass").val(), $("#digit").val());
-            }
-            $("#res").val(result);
+            $("#res").val(gen());
             $("#resultDiv").removeAttr("hidden");
             $("#message").text("");
         })
