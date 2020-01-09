@@ -47,9 +47,10 @@
                             <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="适配那些不支持特殊字符的远古网站"></span>&nbsp;&nbsp;
                             <div id="legacy-detail-wrapper" hidden>
                                 <input type="checkbox" checked disabled>生成数字&nbsp;&nbsp;
-                                <input type="checkbox" checked disabled>生成大小写字母&nbsp;&nbsp;
-                                <input type="checkbox" id="legacy-detail-underline">生成下划线（_）&nbsp;&nbsp;
-                                <input type="checkbox" id="legacy-detail-hyphen">生成连字符（-）
+                                <input type="checkbox" checked disabled>生成小写字母&nbsp;&nbsp;
+                                <input type="checkbox" id="legacy-detail-case" checked>生成大写字母&nbsp;&nbsp;
+                                <input type="checkbox" id="legacy-detail-underline" checked>生成下划线（_）&nbsp;&nbsp;
+                                <input type="checkbox" id="legacy-detail-hyphen" checked>生成连字符（-）
                             </div>
                         </div>
                     </div>
@@ -203,8 +204,9 @@
                     }
                 }
             }
-
-            return splited.join("");
+            var result = splited.join("");
+            if(!($("#legacy-detail-case").prop("checked"))) result = result.toLowerCase();
+            return result;
         }
         function gen() {
             if ($("#legacy").prop("checked")) {
