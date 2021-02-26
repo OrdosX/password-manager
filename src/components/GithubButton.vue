@@ -1,6 +1,6 @@
 <template>
   <div class="o-github-btn shadow" role="button" @click="go">
-    <img class="o-github-text" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/github.svg" />
+    <img class="o-github-text" :src="imgsrc" />
     <span class="ml-3">代码仓库</span>
   </div>
 </template>
@@ -8,9 +8,14 @@
 <script>
 export default {
   name: "GithubButton",
+  data() {
+    return {
+      imgsrc: require('../assets/github.svg')
+    }
+  },
   methods: {
     go: function() {
-      window.open('https://github.com/OrdosX')
+      window.open('https://github.com/OrdosX/SimplePwdMgr')
     }
   }
 };
