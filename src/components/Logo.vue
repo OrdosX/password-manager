@@ -5,12 +5,12 @@
 
 <script>
 export default {
-    name: "Logo",
-    data() {
-        return {
-            imgsrc: require('../assets/logo.webp')
-        }
+  name: 'Logo',
+  data () {
+    return {
+      imgsrc: require('../assets/logo.webp')
     }
+  }
 }
 </script>
 

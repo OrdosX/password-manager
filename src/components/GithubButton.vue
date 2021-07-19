@@ -7,18 +7,18 @@
 
 <script>
 export default {
-  name: "GithubButton",
-  data() {
+  name: 'GithubButton',
+  data () {
     return {
       imgsrc: require('../assets/github.svg')
     }
   },
   methods: {
-    go: function() {
+    go: function () {
       window.open('https://github.com/OrdosX/password-manager')
     }
   }
-};
+}
 </script>
 
 <style>

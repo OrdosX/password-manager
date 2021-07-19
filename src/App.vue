@@ -67,135 +67,135 @@
 </template>
 
 <script>
-import md5 from "blueimp-md5";
-import Clipboard from "clipboard";
-import GithubButton from './components/GithubButton';
-import Logo from './components/Logo';
+import md5 from 'blueimp-md5'
+import Clipboard from 'clipboard'
+import GithubButton from './components/GithubButton'
+import Logo from './components/Logo'
 export default {
-  name: "App",
+  name: 'App',
   components: {
     GithubButton,
     Logo
   },
-  data() {
+  data () {
     return {
-      usage: "",
-      pass: "",
-      digit: "",
-      result: ""
+      usage: '',
+      pass: '',
+      digit: '',
+      result: ''
     }
   },
   methods: {
-    genNormal() {
-      let hash = md5(this.usage + ":" + this.pass).substr(0, this.digit);
+    genNormal () {
+      const hash = md5(this.usage + ':' + this.pass).substr(0, this.digit)
       console.log(hash)
 
-      //计算字母和数字
-      let alphabet = 0;
-      let number = 0;
+      // 计算字母和数字
+      let alphabet = 0
+      let number = 0
       for (let i = 0; i < hash.length; i++) {
         if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          alphabet += 1;
+          alphabet += 1
         } else {
-          number += 1;
+          number += 1
         }
       }
 
-      //将字母和数字中的较小者调整为不小于较大者
-      let splited = hash.split("");
+      // 将字母和数字中的较小者调整为不小于较大者
+      const splited = hash.split('')
       for (let i = 0; alphabet > number; i++) {
         if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          splited[i] = "8";
-          alphabet--;
-          number++;
+          splited[i] = '8'
+          alphabet--
+          number++
         }
       }
       for (let i = 0; alphabet < number; i++) {
         if (hash.charCodeAt(i) >= 48 && hash.charCodeAt(i) <= 57) {
-          splited[i] = "x";
-          alphabet++;
-          number--;
+          splited[i] = 'x'
+          alphabet++
+          number--
         }
       }
 
-      //将字母调整为一个大写一个小写，数字转换为一个数字一个符号
-      let alphabetChanged = false;
-      let numberChanged = false;
+      // 将字母调整为一个大写一个小写，数字转换为一个数字一个符号
+      let alphabetChanged = false
+      let numberChanged = false
       for (let i = 0; i < hash.length; i++) {
         if (splited[i].charCodeAt(0) >= 97 && splited[i].charCodeAt(0) <= 122) {
           if (alphabetChanged) {
-            alphabetChanged = false;
+            alphabetChanged = false
           } else {
-            splited[i] = splited[i].toUpperCase();
-            alphabetChanged = true;
+            splited[i] = splited[i].toUpperCase()
+            alphabetChanged = true
           }
         } else {
           if (numberChanged) {
-            numberChanged = false;
+            numberChanged = false
           } else {
-            splited[i] = String.fromCharCode(hash.charCodeAt(i) - 10);
-            numberChanged = true;
+            splited[i] = String.fromCharCode(hash.charCodeAt(i) - 10)
+            numberChanged = true
           }
         }
       }
-      this.result = splited.join("");
+      this.result = splited.join('')
     },
-    genCompatible() {
-      let hash = md5(this.usage + ":" + this.pass).substr(0, this.digit);
+    genCompatible () {
+      const hash = md5(this.usage + ':' + this.pass).substr(0, this.digit)
       console.log(hash)
 
-      //计算字母和数字
-      let alphabet = 0;
-      let number = 0;
+      // 计算字母和数字
+      let alphabet = 0
+      let number = 0
       for (let i = 0; i < hash.length; i++) {
         if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          alphabet += 1;
+          alphabet += 1
         } else {
-          number += 1;
+          number += 1
         }
       }
 
-      //将字母和数字中的较小者调整为不小于较大者
-      let splited = hash.split("");
+      // 将字母和数字中的较小者调整为不小于较大者
+      const splited = hash.split('')
       for (let i = 0; alphabet > number; i++) {
         if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          splited[i] = "8";
-          alphabet--;
-          number++;
+          splited[i] = '8'
+          alphabet--
+          number++
         }
       }
       for (let i = 0; alphabet < number; i++) {
         if (hash.charCodeAt(i) >= 48 && hash.charCodeAt(i) <= 57) {
-          splited[i] = "x";
-          alphabet++;
-          number--;
+          splited[i] = 'x'
+          alphabet++
+          number--
         }
       }
 
-      //将字母调整为一个大写一个小写，数字不变
-      let alphabetChanged = false;
+      // 将字母调整为一个大写一个小写，数字不变
+      let alphabetChanged = false
       for (let i = 0; i < hash.length; i++) {
         if (splited[i].charCodeAt(0) >= 97 && splited[i].charCodeAt(0) <= 122) {
           if (alphabetChanged) {
-            alphabetChanged = false;
+            alphabetChanged = false
           } else {
-            splited[i] = splited[i].toUpperCase();
-            alphabetChanged = true;
+            splited[i] = splited[i].toUpperCase()
+            alphabetChanged = true
           }
         }
       }
-      this.result = splited.join("");
-    },
+      this.result = splited.join('')
+    }
   },
-  mounted() {
-    new Clipboard(".clipboard-item");
+  mounted () {
+    new Clipboard('.clipboard-item')
   },
   computed: {
-    genBtnDisable() {
-      return this.usage.length==0 || this.pass.length==0 || this.digit.length==0;
+    genBtnDisable () {
+      return this.usage.length === 0 || this.pass.length === 0 || this.digit.length === 0
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
