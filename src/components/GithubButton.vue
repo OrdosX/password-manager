@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     go: function() {
-      window.open('https://github.com/OrdosX/SimplePwdMgr')
+      window.open('https://github.com/OrdosX/password-manager')
     }
   }
 };
