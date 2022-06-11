@@ -3,7 +3,7 @@
     <b-row align-h="center">
       <b-col md="6">
         <p class="mt-3 heading">
-          <Logo class="mr-3" />密码生成器
+          <LogoItem class="mr-3" />密码生成器
         </p>
       </b-col>
     </b-row>
@@ -70,12 +70,12 @@
 import md5 from 'blueimp-md5'
 import Clipboard from 'clipboard'
 import GithubButton from './components/GithubButton'
-import Logo from './components/Logo'
+import LogoItem from './components/Logo'
 export default {
   name: 'App',
   components: {
     GithubButton,
-    Logo
+    LogoItem
   },
   data () {
     return {

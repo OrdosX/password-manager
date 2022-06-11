@@ -5,7 +5,7 @@
 
 <script>
 export default {
-  name: 'Logo',
+  name: 'LogoItem',
   data () {
     return {
       imgsrc: require('../assets/logo.webp')
