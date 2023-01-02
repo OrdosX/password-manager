@@ -1,213 +1,140 @@
-<template>
-  <b-container fluid>
-    <b-row align-h="center">
-      <b-col md="6">
-        <p class="mt-3 heading">
-          <LogoItem class="mr-3" />密码生成器
-        </p>
-      </b-col>
-    </b-row>
-    <b-row align-h="center">
-      <b-col cols="10" md="6">
-        <b-input-group class="mt-3 shadow">
-          <b-input-group-prepend>
-            <b-input-group-text>
-              <b-icon-globe />
-            </b-input-group-text>
-          </b-input-group-prepend>
-          <b-form-input autofocus placeholder="用途" v-model="usage"></b-form-input>
-        </b-input-group>
-        <b-input-group class="mt-3 shadow">
-          <b-input-group-prepend>
-            <b-input-group-text>
-              <b-icon-key />
-            </b-input-group-text>
-          </b-input-group-prepend>
-          <b-form-input placeholder="主密码" v-model="pass" class="password"></b-form-input>
-        </b-input-group>
-        <b-input-group class="mt-3 shadow">
-          <b-input-group-prepend>
-            <b-input-group-text>
-              <b-icon-segmented-nav />
-            </b-input-group-text>
-          </b-input-group-prepend>
-          <b-form-input placeholder="长度" type="number" v-model="digit"></b-form-input>
-          <b-input-group-append>
-            <b-input-group-text @click="digit=10" class="pointer"> 10 </b-input-group-text>
-            <b-input-group-text @click="digit=16" class="pointer"> 16 </b-input-group-text>
-            <b-input-group-text @click="digit=32" class="pointer"> 32 </b-input-group-text>
-          </b-input-group-append>
-        </b-input-group>
-      </b-col>
-    </b-row>
-    <b-row align-h="center" class="mt-5">
-      <b-col cols="10" md="4">
-        <b-input-group class="shadow mb-3">
-          <b-input-group-prepend>
-            <b-input-group-text>
-              <b-icon-key-fill />
-            </b-input-group-text>
-          </b-input-group-prepend>
-          <b-form-input type="text" v-model="result" :disabled="result.length==0" placeholder="子密码"></b-form-input>
-          <b-input-group-append>
-            <b-input-group-text class="clipboard-item pointer" :data-clipboard-text="result">
-              <b-icon-clipboard />
-            </b-input-group-text>
-          </b-input-group-append>
-        </b-input-group>
-      </b-col>
-      <b-col cols="10" md="2">
-        <b-dropdown split block text="生成" variant="success" @click="genNormal" :disabled="genBtnDisable">
-          <b-dropdown-item @click="genCompatible">生成（兼容模式）</b-dropdown-item>
-        </b-dropdown>
-      </b-col>
-    </b-row>
-    <GithubButton />
-  </b-container>
-</template>
+<script setup lang="ts">
+import { ref } from "vue";
+import { sha256 } from "js-sha256";
+import { CopyOutlined } from "@ant-design/icons-vue";
 
-<script>
-import md5 from 'blueimp-md5'
-import Clipboard from 'clipboard'
-import GithubButton from './components/GithubButton'
-import LogoItem from './components/Logo'
-export default {
-  name: 'App',
-  components: {
-    GithubButton,
-    LogoItem
-  },
-  data () {
-    return {
-      usage: '',
-      pass: '',
-      digit: '',
-      result: ''
-    }
-  },
-  methods: {
-    genNormal () {
-      const hash = md5(this.usage + ':' + this.pass).substr(0, this.digit)
-      console.log(hash)
+import Clipboard from "clipboard";
+new Clipboard("#copy");
 
-      // 计算字母和数字
-      let alphabet = 0
-      let number = 0
-      for (let i = 0; i < hash.length; i++) {
-        if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          alphabet += 1
-        } else {
-          number += 1
-        }
-      }
+const usage = ref("");
+const length = ref(16);
+const result = ref("");
 
-      // 将字母和数字中的较小者调整为不小于较大者
-      const splited = hash.split('')
-      for (let i = 0; alphabet > number; i++) {
-        if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          splited[i] = '8'
-          alphabet--
-          number++
-        }
-      }
-      for (let i = 0; alphabet < number; i++) {
-        if (hash.charCodeAt(i) >= 48 && hash.charCodeAt(i) <= 57) {
-          splited[i] = 'x'
-          alphabet++
-          number--
-        }
-      }
+const DIGIT = "0123456789";
+const LOWER = "abcdefghijklmnopqrstuvwxyz";
+const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const SYMBOL = "!@#$%~&*";
+const DIGIT_LEGACY = DIGIT + LOWER + UPPER;
+const DIGIT_MODERN = DIGIT_LEGACY + SYMBOL;
 
-      // 将字母调整为一个大写一个小写，数字转换为一个数字一个符号
-      let alphabetChanged = false
-      let numberChanged = false
-      for (let i = 0; i < hash.length; i++) {
-        if (splited[i].charCodeAt(0) >= 97 && splited[i].charCodeAt(0) <= 122) {
-          if (alphabetChanged) {
-            alphabetChanged = false
-          } else {
-            splited[i] = splited[i].toUpperCase()
-            alphabetChanged = true
-          }
-        } else {
-          if (numberChanged) {
-            numberChanged = false
-          } else {
-            splited[i] = String.fromCharCode(hash.charCodeAt(i) - 10)
-            numberChanged = true
-          }
-        }
-      }
-      this.result = splited.join('')
-    },
-    genCompatible () {
-      const hash = md5(this.usage + ':' + this.pass).substr(0, this.digit)
-      console.log(hash)
-
-      // 计算字母和数字
-      let alphabet = 0
-      let number = 0
-      for (let i = 0; i < hash.length; i++) {
-        if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          alphabet += 1
-        } else {
-          number += 1
-        }
-      }
-
-      // 将字母和数字中的较小者调整为不小于较大者
-      const splited = hash.split('')
-      for (let i = 0; alphabet > number; i++) {
-        if (hash.charCodeAt(i) >= 97 && hash.charCodeAt(i) <= 122) {
-          splited[i] = '8'
-          alphabet--
-          number++
-        }
-      }
-      for (let i = 0; alphabet < number; i++) {
-        if (hash.charCodeAt(i) >= 48 && hash.charCodeAt(i) <= 57) {
-          splited[i] = 'x'
-          alphabet++
-          number--
-        }
-      }
-
-      // 将字母调整为一个大写一个小写，数字不变
-      let alphabetChanged = false
-      for (let i = 0; i < hash.length; i++) {
-        if (splited[i].charCodeAt(0) >= 97 && splited[i].charCodeAt(0) <= 122) {
-          if (alphabetChanged) {
-            alphabetChanged = false
-          } else {
-            splited[i] = splited[i].toUpperCase()
-            alphabetChanged = true
-          }
-        }
-      }
-      this.result = splited.join('')
-    }
-  },
-  mounted () {
-    new Clipboard('.clipboard-item')
-  },
-  computed: {
-    genBtnDisable () {
-      return this.usage.length === 0 || this.pass.length === 0 || this.digit.length === 0
-    }
+function convert(hash: string, digit: string) {
+  let number = eval(`0x${hash}n`);
+  let length = eval(`${digit.length}n`);
+  let buffer = [];
+  while (number >= length) {
+    let remain = number % length;
+    number = number / length;
+    buffer.push(digit[remain]);
   }
+  buffer.push(digit[number]);
+  return buffer.reverse().join("");
+}
+
+function generateLegacy() {
+  let hash = sha256(usage.value);
+  result.value = convert(hash, DIGIT_LEGACY).slice(0, length.value);
+}
+
+function generateModern() {
+  let hash = sha256(usage.value);
+  let temp = convert(hash, DIGIT_MODERN).slice(0, length.value);
+
+  let countLimit = Math.floor(length.value / 4);
+
+  let countSymbol = temp.replace(/\w/g, "").length;
+  for (let i = countSymbol - countLimit; i > 0; i--) {
+    temp = temp.replace(/\W/, DIGIT[(countSymbol - countLimit) % DIGIT.length]);
+  }
+  for (let i = countLimit - countSymbol; i > 0; i--) {
+    temp = temp.replace(
+      /\w/,
+      SYMBOL[(countLimit - countSymbol) % SYMBOL.length]
+    );
+  }
+
+  let countDigit = temp.replace(/\D/g, "").length;
+  for (let i = countDigit - countLimit; i > 0; i--) {
+    temp = temp.replace(/\d/, LOWER[(countDigit - countLimit) % LOWER.length]);
+  }
+  for (let i = countLimit - countDigit; i > 0; i--) {
+    temp = temp.replace(
+      /[a-zA-Z]/,
+      DIGIT[(countLimit - countDigit) % DIGIT.length]
+    );
+  }
+
+  let countLower = temp.replace(/[^a-z]/g, "").length;
+  for (let i = countLower - countLimit; i > 0; i--) {
+    temp = temp.replace(
+      /[a-z]/,
+      UPPER[(countLower - countLimit) % UPPER.length]
+    );
+  }
+  for (let i = countLimit - countLower; i > 0; i--) {
+    temp = temp.replace(
+      /[A-Z]/,
+      LOWER[(countLimit - countLower) % LOWER.length]
+    );
+  }
+
+  result.value = temp;
+}
+
+function handleEnter() {
+  if (result.value.length == 0) {
+    generateModern();
+    return;
+  }
+  let copy = document.querySelector("#copy") as HTMLElement;
+  if (copy != null) copy.click();
 }
 </script>
 
-<style lang="scss">
-@import './assets/password.css';
-.password {
-  font-family: password;
-}
-.pointer {
-  cursor: pointer;
-}
-.heading {
-  font-size: 3rem;
-  text-align: center;
-}
-</style>
+<template>
+  <a-row
+    type="flex"
+    justify="center"
+    :align="'middle'"
+    style="min-height: 100vh; background-color: aliceblue"
+  >
+    <a-col :md="6">
+      <a-card>
+        <a-space direction="vertical" size="large" style="width: 100%">
+          <a-input
+            addon-before="用途"
+            v-model:value="usage"
+            placeholder="example.com"
+            @change="result = ''"
+            @pressEnter="handleEnter"
+            autofocus
+          ></a-input>
+          <a-input
+            addon-before="长度"
+            v-model:value="length"
+            @pressEnter="handleEnter"
+          ></a-input>
+          <a-button @click="generateModern" type="primary" block>生成</a-button>
+          <a-button @click="generateLegacy" block>生成（兼容模式）</a-button>
+          <a-input addon-before="结果" v-model:value="result" id="result">
+            <template #addonAfter>
+              <copy-outlined
+                id="copy"
+                role="button"
+                data-clipboard-target="#result"
+              />
+            </template>
+          </a-input>
+          <a-row type="flex" justify="end">
+            <a-col>
+              <a href="https://github.com/OrdosX/password-manager">
+                Github Repo
+              </a>
+            </a-col>
+          </a-row>
+        </a-space>
+      </a-card>
+    </a-col>
+  </a-row>
+</template>
+
+<style scoped></style>
